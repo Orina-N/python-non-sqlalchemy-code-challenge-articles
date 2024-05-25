@@ -6,6 +6,7 @@ class Article:
         self.author = author
         self.magazine = magazine
         self._title = title
+        author.add_article(self)
         self.all.append(self)
 
     @property
@@ -26,24 +27,45 @@ class Article:
 
 class Author:
     def __init__(self, name):
-        self.name = name
+        if not isinstance(name, str):
+            raise ValueError("Name must be a string")
+        if len(name) == 0:
+            raise ValueError("Name must have more than 0 characters")
+        self._name = name
+        self._articles = []
+        
+    
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self,value):
+        raise ValueError("Cannot change authors name")
 
     def articles(self):
-        pass
+        return self._articles
+ 
 
     def magazines(self):
-        pass
+        return self._magazines
 
-    def add_article(self, magazine, title):
-        pass
+    
+    def add_article(self, article):
+        if not isinstance(article, Article):
+            raise ValueError("Article must be an instance of Article")
+        self._articles.append(article) 
+        return article
+
 
     def topic_areas(self):
-        pass
+        return {magazine.category for magazine in self._magazines}
 
 class Magazine:
     def __init__(self, name, category):
         self.name = name
         self.category = category
+
 
     def articles(self):
         pass
@@ -57,9 +79,14 @@ class Magazine:
     def contributing_authors(self):
         pass
 
-Article.all = []
-author = Author("Carry Bradshaw")
+
+
+author_1 = Author("Carry Bradshaw")
 magazine_1 = Magazine("Vogue", "Fashion")
-magazine_2 = Magazine("AD", "Architecture & Design")
-article_1 = Article(author, magazine_1, "How to wear a tutu with style")
-article_2 = Article(author, magazine_2, "Dating life in NYC")
+magazine_2 = Magazine("AD", "Architecture")
+magazine_3 = Magazine("GQ", "Fashion")
+
+
+Article(author_1, magazine_1, "How to wear a tutu with style")
+Article(author_1, magazine_2, "Dating life in NYC")
+
