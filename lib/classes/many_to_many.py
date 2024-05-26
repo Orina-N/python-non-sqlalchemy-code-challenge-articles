@@ -7,6 +7,7 @@ class Article:
         self.magazine = magazine
         self._title = title
         author.add_article(self)
+        author.add_magazine(magazine)
         self.all.append(self)
 
     @property
@@ -33,6 +34,7 @@ class Author:
             raise ValueError("Name must have more than 0 characters")
         self._name = name
         self._articles = []
+        self._magazines = []
         
     
     @property
@@ -57,6 +59,12 @@ class Author:
         self._articles.append(article) 
         return article
 
+    def add_magazine(self, magazine):
+        if not isinstance(magazine, Magazine):
+            raise ValueError("Magazine must be an instance of Magazine")
+        if magazine not in self._magazines:
+            self._magazines.append(magazine)
+        return magazine 
 
     def topic_areas(self):
         return {magazine.category for magazine in self._magazines}
@@ -86,7 +94,6 @@ magazine_1 = Magazine("Vogue", "Fashion")
 magazine_2 = Magazine("AD", "Architecture")
 magazine_3 = Magazine("GQ", "Fashion")
 
-
-Article(author_1, magazine_1, "How to wear a tutu with style")
-Article(author_1, magazine_2, "Dating life in NYC")
-
+author_1.add_magazine(magazine_1)
+author_1.add_magazine(magazine_2)
+author_1.add_magazine(magazine_3)
