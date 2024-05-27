@@ -1,14 +1,11 @@
 class Article:
-
     all = []
 
     def __init__(self, author, magazine, title):
         self.author = author
         self.magazine = magazine
-        self._title = title
-        author.add_article(self)
-        author.add_magazine(magazine)
-        self.all.append(self)
+        self._title = title  # Use the private attribute to allow setting the title initially
+        Article.all.append(self)
 
     @property
     def title(self):
@@ -18,13 +15,12 @@ class Article:
     def title(self, value):
         raise AttributeError("Cannot set attribute 'title'")
 
-    def _validate_title(self, title):
-        if not isinstance(title, str):
-            raise TypeError("Title must be a string")
-        if len(title) < 5 or len(title) > 50:
-            raise ValueError("Title must be between 5 and 50 characters inclusive")
-        return title
-        
+    
+
+    
+
+    
+    
 
 class Author:
     def __init__(self, name):
@@ -46,53 +42,65 @@ class Author:
     def name(self,value):
         raise ValueError("Cannot change authors name")
 
+
     def articles(self):
         return [article for article in Article.all if article.author == self]
- 
+        
 
     def magazines(self):
-        return self._magazines
+        return list(set(article.magazine for article in Article.all if article.author == self))
 
-    
-    def add_article(self, article):
-        pass
-
-        
-    def add_magazine(self, magazine):
-        if not isinstance(magazine, Magazine):
-            raise ValueError("Magazine must be an instance of Magazine")
-        if magazine not in self._magazines:
-            self._magazines.append(magazine)
-        return magazine 
+    def add_article(self, magazine, title):
+        return Article(self, magazine, title)
 
     def topic_areas(self):
-        return {magazine.category for magazine in self._magazines}
+       categories = {article.magazine.category for article in Article.all if article.author == self}
+       return list(categories) if categories else None
+    
+from collections import defaultdict
 
 class Magazine:
-    def __init__(self, name, category):
+    def __init__(self, name: str, category: str):
+        self._validate_name_and_category(name, category)
         self.name = name
         self.category = category
 
+    def _validate_name_and_category(self, name: str, category: str):
+        if not isinstance(name, str) or not isinstance(category, str):
+            raise ValueError("Name and category must be strings")
+        if not 2 <= len(name) <= 16:
+            raise ValueError("Name must be between 2 and 16 characters long")
+        if not category:
+            raise ValueError("Category cannot be empty")
 
     def articles(self):
-        pass
+        return [article for article in Article.all if article.magazine == self]
 
     def contributors(self):
-        pass
+        return list(set(article.author for article in Article.all if article.magazine == self))
 
     def article_titles(self):
-        pass
+        titles = [article.title for article in Article.all if article.magazine == self]
+        return titles if titles else []
 
     def contributing_authors(self):
-        pass
+        author_article_count = defaultdict(int)
+        for article in self.articles():
+            author_article_count[article.author.name] += 1
+        return [author for author in set(article.author for article in self.articles()) 
+                if author_article_count[author.name] > 2]
+
+
+
 
 
 
 author_1 = Author("Carry Bradshaw")
+author_2 = Author("Nathaniel Hawthorne")
 magazine_1 = Magazine("Vogue", "Fashion")
 magazine_2 = Magazine("AD", "Architecture")
-magazine_3 = Magazine("GQ", "Fashion")
-
-author_1.add_magazine(magazine_1)
-author_1.add_magazine(magazine_2)
-author_1.add_magazine(magazine_3)
+Article(author_1, magazine_1, "How to wear a tutu with style")
+Article(author_1, magazine_1, "How to be single and happy")
+Article(author_1, magazine_1, "Dating life in NYC")
+Article(author_1, magazine_2, "Carrara Marble is so 2020")
+Article(author_2, magazine_2, "2023 Eccentric Design Trends")
