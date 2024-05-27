@@ -32,6 +32,7 @@ class Author:
             raise ValueError("Name must be a string")
         if len(name) == 0:
             raise ValueError("Name must have more than 0 characters")
+        
         self._name = name
         self._articles = []
         self._magazines = []
@@ -46,7 +47,7 @@ class Author:
         raise ValueError("Cannot change authors name")
 
     def articles(self):
-        return self._articles
+        return [article for article in Article.all if article.author == self]
  
 
     def magazines(self):
@@ -54,11 +55,9 @@ class Author:
 
     
     def add_article(self, article):
-        if not isinstance(article, Article):
-            raise ValueError("Article must be an instance of Article")
-        self._articles.append(article) 
-        return article
+        pass
 
+        
     def add_magazine(self, magazine):
         if not isinstance(magazine, Magazine):
             raise ValueError("Magazine must be an instance of Magazine")
